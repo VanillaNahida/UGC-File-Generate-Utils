@@ -140,7 +140,13 @@ class BlockHelper:
         h2, s2, v2 = hsv2
 
         # 色相是循环的，计算最短角度距离
-        dh = min(abs(h1 - h2), 360 - abs(h1 - h2)) / 360.0
+        dh_raw = min(abs(h1 - h2), 360 - abs(h1 - h2)) / 360.0
+
+        # 使用饱和度乘积作为色相的权重
+        # 如果任意一个颜色的饱和度接近0，则色相的差异可以视为不重要
+        # 如果两个颜色的饱和度都很高，则保留原本的色相距离
+        dh = dh_raw * math.sqrt(s1 * s2)
+
         ds = abs(s1 - s2)
         dv = abs(v1 - v2)
 
