@@ -139,20 +139,17 @@ class BlockHelper:
         h1, s1, v1 = hsv1
         h2, s2, v2 = hsv2
 
-        # 色相是循环的，计算最短角度距离
-        dh_raw = min(abs(h1 - h2), 360 - abs(h1 - h2)) / 360.0
+        # 转弧度
+        h1_rad = math.radians(h1)
+        h2_rad = math.radians(h2)
 
-        # 使用饱和度乘积作为色相的权重
-        # 如果任意一个颜色的饱和度接近0，则色相的差异可以视为不重要
-        # 如果两个颜色的饱和度都很高，则保留原本的色相距离
-        dh = dh_raw * math.sqrt(s1 * s2)
+        # 在极坐标上使用余弦公式计算距离
+        hs_dist_sq = s1 ** 2 + s2 ** 2 - 2 * s1 * s2 * math.cos(h1_rad - h2_rad)
 
-        ds = abs(s1 - s2)
-        dv = abs(v1 - v2)
+        # 计算亮度轴距离
+        dv_sq = (v1 - v2) ** 2
 
-        # 色相权重较高
-        distance = math.sqrt(dh ** 2 * 2 + ds ** 2 + dv ** 2)
-        return distance
+        return math.sqrt(hs_dist_sq + dv_sq)
 
     @staticmethod
     def find_closest_template(target_color: str,
